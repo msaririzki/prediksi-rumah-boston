@@ -49,8 +49,3 @@ Analisa semua file di direktori saat ini, identifikasi file Laravel yang bisa di
 
 ---
 
-### **Tips Tambahan Saat Menggunakan IDE AI:**
-
-* **Attach Files:** Pastikan kamu sudah "attach" atau membuka file `ml-api/app.py`, `HousingController.php`, dan `form.blade.php` agar AI bisa membaca logic aslinya.
-* **Plan Mode:** Jika IDE kamu punya "Plan Mode", biarkan dia membuat daftar file yang akan dihapus (seperti folder `vendor`, `app/Http`, `resources/views/welcome.blade.php`, dll) terlebih dahulu.
-* **Iterasi:** Jika hasil Dark Mode-nya masih kurang pas, kamu bisa berikan perintah lanjutan: *"Perbaiki kontras warna teks pada input field saat dark mode aktif."*
