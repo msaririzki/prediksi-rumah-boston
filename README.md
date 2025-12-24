@@ -55,10 +55,14 @@ The easiest way to run the project is using Docker.
 
 ### Installation (Docker - Recommended)
 
+#### Option A: One-Click Start (Windows)
+Simply double-click the `start-docker.bat` file in the root directory.
+
+#### Option B: Command Line
 1.  **Clone the repository**
     ```sh
-    git clone https://github.com/username/boston-prime.git
-    cd boston-prime
+    git clone https://github.com/msaririzki/prediksi-rumah-boston.git
+    cd prediksi-rumah-boston
     ```
 
 2.  **Build and Run**

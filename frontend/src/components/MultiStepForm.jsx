@@ -84,7 +84,7 @@ const MultiStepForm = () => {
     // Simulate luxury "processing" delay
     setTimeout(async () => {
       try {
-        const response = await axios.post('http://localhost:8000/predict', formData);
+        const response = await axios.post('/api/predict', formData);
         setPrediction(response.data.price);
         
         // --- Sync Global State for WhatsApp ---
