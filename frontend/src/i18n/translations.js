@@ -38,7 +38,8 @@ export const translations = {
         PTRATIO: { label: "Rasio Murid-Guru", desc: "Berdasarkan kota", tooltip: "Kualitas pendidikan (rasio lebih rendah lebih baik)." },
         B: { label: "Indeks Demografi", desc: "Bk - 0.63", tooltip: "Proporsi demografis kulit hitam (variabel historis data)." },
         LSTAT: { label: "Status Ekonomi", desc: "% Populasi status rendah", tooltip: "Persentase populasi kelas bawah di area tersebut." }
-      }
+      },
+      error_empty: "Mohon isi minimal satu data di step ini sebelum melanjutkan."
     },
     meter: {
       market_pos: "Posisi Pasar",
@@ -93,7 +94,8 @@ export const translations = {
         PTRATIO: { label: "Pupil-Teacher Ratio", desc: "By town", tooltip: "Education quality indicator (lower is better)." },
         B: { label: "Demographic Index", desc: "Bk - 0.63", tooltip: "Proportion of black demographic (historical data variable)." },
         LSTAT: { label: "Economic Status", desc: "% Lower status population", tooltip: "% lower status of the population." }
-      }
+      },
+      error_empty: "Please fill at least one field in this step before proceeding."
     },
     meter: {
       market_pos: "Market Position",

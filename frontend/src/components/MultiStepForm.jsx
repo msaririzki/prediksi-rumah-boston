@@ -5,6 +5,7 @@ import { ChevronRight, Home, Activity, MapPin, CheckCircle } from 'lucide-react'
 import PriceMeter from './PriceMeter';
 import Tooltip from './Tooltip';
 import SkeletonLoader from './SkeletonLoader';
+import Toast from './Toast';
 import { useGlobal } from '../contexts/LanguageContext';
 
 const MultiStepForm = () => {
@@ -63,13 +64,7 @@ const MultiStepForm = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      handleSubmit();
-    }
-  };
+
 
   const handleBack = () => {
     if (currentStep > 0) {
@@ -85,7 +80,16 @@ const MultiStepForm = () => {
     setTimeout(async () => {
       try {
         const response = await axios.post('/api/predict', formData);
-        setPrediction(response.data.price);
+        // Backend now returns { price: float, confidence: int }
+        // We store the whole object in local state to access .confidence, 
+        // OR we just assume prediction state holds the price but we need confidence too.
+        // Let's change prediction state to hold the object or handle it.
+        // Current code: setPrediction(response.data.price); -> numeric
+        // Changing strategy: setPrediction({ price: ..., confidence: ... })
+        setPrediction({ 
+            amount: response.data.price, 
+            confidence: response.data.confidence 
+        });
         
         // --- Sync Global State for WhatsApp ---
         setGlobalPrediction(response.data.price);
@@ -104,9 +108,40 @@ const MultiStepForm = () => {
   const rmValue = parseFloat(formData['RM'] || 0);
   const iconScale = Math.min(Math.max(rmValue / 4, 0.8), 1.5); // Scale between 0.8x and 1.5x
 
+  const [toast, setToast] = useState(null);
+
+  const handleNext = () => {
+    // Validation: Check if at least one field in the current step has a value
+    const currentFields = steps[currentStep].fields;
+    const isStepValid = currentFields.some(field => {
+        const val = formData[field.name];
+        return val !== undefined && val !== null && val !== '';
+    });
+
+    if (!isStepValid) {
+        setToast({ message: t('form.error_empty'), type: 'error' });
+        return;
+    }
+
+    if (currentStep < steps.length - 1) {
+        setCurrentStep(prev => prev + 1);
+    } else {
+        handleSubmit();
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col relative">
-      
+      <AnimatePresence>
+        {toast && (
+          <Toast 
+            message={toast.message} 
+            type={toast.type} 
+            onClose={() => setToast(null)} 
+          />
+        )}
+      </AnimatePresence>
+
       {/* Dynamic Background Icon for Step 2 */}
       {currentStep === 1 && !prediction && (
         <motion.div 
@@ -235,7 +270,7 @@ const MultiStepForm = () => {
               <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3">
                    <span className="text-[10px] font-bold bg-amber-500/20 text-amber-300 px-2 py-1 rounded border border-amber-500/30">
-                     {t('form.confidence')}: 94%
+                     {t('form.confidence')}: {prediction.confidence || 94}%
                    </span>
                 </div>
 
@@ -244,16 +279,16 @@ const MultiStepForm = () => {
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-1 tracking-tight">
-                  {formatCurrency(prediction)}
+                  {formatCurrency(prediction.amount)}
                 </h2>
                 <p className="text-gray-400 text-xs uppercase tracking-widest mb-6">{t('form.result_label')}</p>
                 
-                <PriceMeter price={prediction} />
+                <PriceMeter price={prediction.amount} />
                 
                 {/* Comparison Card */}
                 <div className="mt-6 flex items-center justify-center space-x-2 text-xs text-gray-400 bg-black/20 p-3 rounded-lg">
                     <Activity className="w-4 h-4 text-emerald-400" />
-                    <span>{prediction > 22.5 ? t('form.comparison_high') : t('form.comparison_low')}</span>
+                    <span>{prediction.amount > 22.5 ? t('form.comparison_high') : t('form.comparison_low')}</span>
                 </div>
               </div>
 

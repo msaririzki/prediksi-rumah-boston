@@ -44,15 +44,13 @@ const PriceMeter = ({ price }) => {
         ></motion.div>
       </div>
       
-      <div className="flex justify-between text-xs text-gray-500 mt-2 font-mono">
-        {/* We can also format these indicators if we want precise USD/IDR, but usually markers are static.
-            For simplicity, let's keep them generic or use the formatter locally if needed.
-            But min/max are raw numbers from model logic. 
-            For display purposes, let's just show "Low" / "High" markers or currency.
-        */}
+      <div className="flex flex-col sm:flex-row justify-between text-[10px] sm:text-xs text-gray-500 mt-2 font-mono gap-1 sm:gap-0">
         <span>{formatCurrency(min)}</span>
-        <span className="text-gray-400">{t('meter.avg_label')}: {formatCurrency(avg)}</span>
-        <span>{formatCurrency(max)}+</span>
+        <span className="text-gray-400 sm:text-center flex justify-between sm:block w-full sm:w-auto">
+             <span className="sm:hidden">{t('meter.avg_label')}:</span>
+             <span>{formatCurrency(avg)}</span>
+        </span>
+        <div className="text-right sm:text-left">{formatCurrency(max)}+</div>
       </div>
     </div>
   );

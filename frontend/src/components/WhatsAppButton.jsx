@@ -7,7 +7,7 @@ const WhatsAppButton = () => {
   const { t, globalPrediction, formatCurrency, globalFormData } = useGlobal();
   const phoneNumber = "628978967755";
   
-  // Construct dynamic message
+  // Construct dynamic dfdfmessage
   // Halo BostonAI, saya baru saja memprediksi rumah dengan [Jumlah Kamar] kamar dan hasilnya adalah [Harga]. 
   const rooms = globalFormData && globalFormData['RM'] ? globalFormData['RM'] : '...';
   const price = globalPrediction ? formatCurrency(globalPrediction) : '...';

@@ -72,4 +72,25 @@ def predict(data: dict):
     
     # Prediksi
     prediction = model.predict(X_input)
-    return {"price": float(prediction[0])}
+    predicted_price = float(prediction[0])
+
+    # --- Hitung Confidence Score (Simulasi Dinamis) ---
+    # Logika: Semakin jauh nilai input dari rata-rata (DEFAULTS), semakin rendah confidence score.
+    # Namun dibatasi agar tidak terlalu rendah (misal min 75%, max 98%)
+    
+    defaults_values = [DEFAULTS.get(f, 0) for f in features]
+    input_values = final_input
+    
+    # Hitung Euclidean distance sederhana yang dinormalisasi (sangat simple heuristic)
+    # Kita tidak pakai standar deviasi asli, jadi kita estimasi kasar saja.
+    dist = np.linalg.norm(np.array(input_values) - np.array(defaults_values))
+    
+    # Base confidence 98%, dikurangi berdasarkan distance
+    # Faktor bagi (denominator) disesuaikan agar distance wajar (~100-500) mengurangi 5-20%
+    confidence_penalty = min(dist / 50, 20) # Max penalty 20%
+    confidence_score = max(int(98 - confidence_penalty), 75)
+
+    return {
+        "price": predicted_price,
+        "confidence": confidence_score
+    }
