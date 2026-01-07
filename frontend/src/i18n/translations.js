@@ -10,9 +10,9 @@ export const translations = {
       version: "v2.1.0"
     },
     form: {
-      step1: "Lokasi & Lingkungan",
-      step2: "Fisik & Akses",
-      step3: "Sosial & Ekonomi",
+      step1: "Karakteristik Rumah",
+      step2: "Lokasi",
+      step3: "Lingkungan",
       instr_title: "Lengkapi data properti untuk estimasi akurat",
       back: "Kembali",
       next: "Lanjut",
@@ -25,19 +25,39 @@ export const translations = {
       comparison_low: "12% lebih hemat dari properti serupa",
       comparison_avg: "Sesuai dengan rata-rata pasar",
       fields: {
-        CRIM: { label: "Tingkat Kriminalitas", desc: "Per kapita menurut kota", tooltip: "Angka kriminalitas yang lebih rendah biasanya meningkatkan nilai properti." },
-        ZN: { label: "Zona Residensial", desc: "Lahan > 25,000 sq.ft", tooltip: "Proporsi lahan perumahan untuk lot besar." },
-        INDUS: { label: "Proporsi Industri", desc: "Bisnis non-ritel", tooltip: "Area industri yang tinggi dapat menurunkan nilai hunian." },
+        RM: { label: "Jumlah Kamar", desc: "Rata-rata per hunian", tooltip: "Faktor paling signifikan dalam penentuan harga.", placeholder: "Contoh: 6" },
+        AGE: { 
+          label: "Usia Bangunan", 
+          desc: "Tingkat kebaruan unit", 
+          tooltip: "Bangunan baru biasanya memiliki nilai lebih tinggi.",
+          options: { new: "Baru / Renovasi", moderate: "Sedang", old: "Lama / Butuh Renovasi" }
+        },
+        DIS: { 
+          label: "Jarak ke Pusat Kota", 
+          desc: "Akses ke pusat bisnis", 
+          tooltip: "Jarak ke pusat lapangan kerja utama.",
+          options: { near: "Dekat (< 2km)", medium: "Sedang (2-5km)", far: "Jauh (> 5km)" }
+        },
+        RAD: { 
+          label: "Akses Jalan Tol", 
+          desc: "Konektivitas jalan raya", 
+          tooltip: "Kemudahan akses ke jalan raya utama.",
+          options: { good: "Baik (Langsung)", average: "Sedang", poor: "Buruk / Jauh" }
+        },
+        NOX: { 
+          label: "Tingkat Polusi", 
+          desc: "Kualitas udara lingkungan", 
+          tooltip: "Kualitas udara berpengaruh pada kenyamanan (NOx).",
+          options: { light: "Ringan", moderate: "Sedang", high: "Tinggi" }
+        },
         CHAS: { label: "Tepi Sungai?", desc: "Charles River", opt0: "Bukan Tepi Sungai", opt1: "Tepi Sungai", tooltip: "Properti di tepi sungai memiliki nilai premium." },
-        NOX: { label: "Polusi (NOx)", desc: "Konsentrasi oksida nitrat", tooltip: "Kualitas udara berpengaruh pada kenyamanan." },
-        RM: { label: "Jumlah Kamar", desc: "Rata-rata per hunian", tooltip: "Faktor paling signifikan dalam penentuan harga." },
-        AGE: { label: "Usia Bangunan", desc: "Dibangun sebelum 1940", tooltip: "Bangunan tua mungkin memiliki nilai sejarah atau butuh renovasi." },
-        DIS: { label: "Jarak Kerja", desc: "Ke 5 pusat kerja Boston", tooltip: "Akses ke pusat lapangan kerja utama." },
-        RAD: { label: "Akses Tol", desc: "Indeks aksesibilitas", tooltip: "Kemudahan akses ke jalan raya utama." },
-        TAX: { label: "Pajak Properti", desc: "Per $10,000", tooltip: "Nilai pajak penuh per $10,000." },
-        PTRATIO: { label: "Rasio Murid-Guru", desc: "Berdasarkan kota", tooltip: "Kualitas pendidikan (rasio lebih rendah lebih baik)." },
-        B: { label: "Indeks Demografi", desc: "Bk - 0.63", tooltip: "Proporsi demografis kulit hitam (variabel historis data)." },
-        LSTAT: { label: "Status Ekonomi", desc: "% Populasi status rendah", tooltip: "Persentase populasi kelas bawah di area tersebut." }
+        CRIM: { 
+          label: "Tingkat Kriminalitas", 
+          desc: "Keamanan lingkungan", 
+          tooltip: "Angka kriminalitas yang lebih rendah meningkatkan nilai properti.",
+          options: { low: "Rendah", medium: "Sedang", high: "Tinggi" }
+        },
+        TAX: { label: "Pajak Properti (Opsional)", desc: "Per $10,000", tooltip: "Nilai pajak penuh per $10,000.", placeholder: "Contoh: 300" }
       },
       error_empty: "Mohon isi minimal satu data di step ini sebelum melanjutkan."
     },
@@ -66,9 +86,9 @@ export const translations = {
       version: "v2.1.0"
     },
     form: {
-      step1: "Location & Environment",
-      step2: "Physical & Access",
-      step3: "Social & Economic",
+      step1: "Property Characteristics",
+      step2: "Location",
+      step3: "Environment",
       instr_title: "Complete property data for accurate estimation",
       back: "Back",
       next: "Next",
@@ -81,19 +101,39 @@ export const translations = {
       comparison_low: "12% savings vs similar properties",
       comparison_avg: "Aligned with market average",
       fields: {
-        CRIM: { label: "Crime Rate", desc: "Per capita by town", tooltip: "Lower crime rates typically increase property value." },
-        ZN: { label: "Residential Zone", desc: "Lots > 25,000 sq.ft", tooltip: "Proportion of residential land zoned for large lots." },
-        INDUS: { label: "Industrial Proportion", desc: "Non-retail business", tooltip: "High industrial areas may lower residential value." },
+        RM: { label: "Room Count", desc: "Average per dwelling", tooltip: "The most significant factor in pricing.", placeholder: "Example: 6" },
+        AGE: { 
+          label: "Building Age", 
+          desc: "Unit newness level", 
+          tooltip: "Newer buildings typically value higher.",
+          options: { new: "New / Renovated", moderate: "Moderate", old: "Old / Needs Renovation" }
+        },
+        DIS: { 
+          label: "Distance to City Center", 
+          desc: "Access to business hubs", 
+          tooltip: "Distance to main employment centers.",
+          options: { near: "Near (< 2km)", medium: "Medium (2-5km)", far: "Far (> 5km)" }
+        },
+        RAD: { 
+          label: "Highway Access", 
+          desc: "Road connectivity", 
+          tooltip: "Accessibility to radial highways.",
+          options: { good: "Good (Direct)", average: "Average", poor: "Poor / Far" }
+        },
+        NOX: { 
+          label: "Pollution Level", 
+          desc: "Environmental air quality", 
+          tooltip: "Air quality affects livability (NOx).",
+          options: { light: "Light", moderate: "Moderate", high: "High" }
+        },
         CHAS: { label: "River Bound?", desc: "Charles River", opt0: "No", opt1: "Yes", tooltip: "Properties bounding the river attract a premium." },
-        NOX: { label: "Pollution (NOx)", desc: "Nitric oxide concentration", tooltip: "Air quality affects livability and value." },
-        RM: { label: "Room Count", desc: "Average per dwelling", tooltip: "The most significant factor in pricing." },
-        AGE: { label: "Building Age", desc: "Built prior to 1940", tooltip: "Older buildings feature historic value or renovation needs." },
-        DIS: { label: "Employment Distance", desc: "To 5 Boston centers", tooltip: "Weighted distances to five employment centres." },
-        RAD: { label: "Highway Access", desc: "Accessibility index", tooltip: "Index of accessibility to radial highways." },
-        TAX: { label: "Property Tax", desc: "Per $10,000", tooltip: "Full-value property-tax rate per $10,000." },
-        PTRATIO: { label: "Pupil-Teacher Ratio", desc: "By town", tooltip: "Education quality indicator (lower is better)." },
-        B: { label: "Demographic Index", desc: "Bk - 0.63", tooltip: "Proportion of black demographic (historical data variable)." },
-        LSTAT: { label: "Economic Status", desc: "% Lower status population", tooltip: "% lower status of the population." }
+        CRIM: { 
+          label: "Crime Rate", 
+          desc: "Neighborhood safety", 
+          tooltip: "Lower crime rates increase property value.",
+          options: { low: "Low", medium: "Medium", high: "High" }
+        },
+        TAX: { label: "Property Tax (Optional)", desc: "Per $10,000", tooltip: "Full-value property-tax rate per $10,000.", placeholder: "Example: 300" }
       },
       error_empty: "Please fill at least one field in this step before proceeding."
     },

@@ -21,40 +21,119 @@ const MultiStepForm = () => {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // --- Default Values for Hidden Fields (Means) ---
+  const DEFAULT_VALUES = {
+    ZN: 11.36,
+    INDUS: 11.14,
+    PTRATIO: 18.45,
+    LSTAT: 12.65,
+    B: 356.67,
+    TAX: 408.24 // Default if optional TAX is empty
+  };
+
+  // --- Category Mappings to Numerical Values ---
+  const CATEGORY_MAP = {
+    // NOX (Pollution)
+    light: 0.4, moderate: 0.55, high: 0.75,
+    // CRIM (Crime)
+    low: 0.05, medium: 0.50, high: 10.0,
+    // RAD (Highway)
+    good: 24, average: 5, poor: 1,
+    // DIS (Distance)
+    near: 1.5, medium: 4.0, far: 8.0,
+    // AGE (Building Age) - Represented as % built before 1940
+    new: 10.0, moderate: 50.0, old: 90.0
+  };
+
   // --- Dynamic Steps ---
   const steps = useMemo(() => [
     {
       id: 1,
-      title: t('form.step1'),
-      icon: <MapPin className="w-5 h-5" />,
+      title: t('form.step1'), // Karakteristik Rumah
+      icon: <Home className="w-5 h-5" />,
       fields: [
-        { name: 'CRIM', label: t('form.fields.CRIM.label'), type: 'number', step: '0.01', desc: t('form.fields.CRIM.desc'), tooltip: t('form.fields.CRIM.tooltip') },
-        { name: 'ZN', label: t('form.fields.ZN.label'), type: 'number', step: '0.1', desc: t('form.fields.ZN.desc'), tooltip: t('form.fields.ZN.tooltip') },
-        { name: 'INDUS', label: t('form.fields.INDUS.label'), type: 'number', step: '0.1', desc: t('form.fields.INDUS.desc'), tooltip: t('form.fields.INDUS.tooltip') },
-        { name: 'CHAS', label: t('form.fields.CHAS.label'), type: 'select', options: [{val: 0, show: t('form.fields.CHAS.opt0')}, {val: 1, show: t('form.fields.CHAS.opt1')}], desc: t('form.fields.CHAS.desc'), tooltip: t('form.fields.CHAS.tooltip') },
-        { name: 'NOX', label: t('form.fields.NOX.label'), type: 'number', step: '0.01', desc: t('form.fields.NOX.desc'), tooltip: t('form.fields.NOX.tooltip') },
+        { name: 'RM', label: t('form.fields.RM.label'), type: 'number', step: '0.1', desc: t('form.fields.RM.desc'), tooltip: t('form.fields.RM.tooltip'), placeholder: t('form.fields.RM.placeholder') },
+        { 
+          name: 'AGE', 
+          label: t('form.fields.AGE.label'), 
+          type: 'select', 
+          options: [
+            { val: '', show: '-' },
+            { val: 'new', show: t('form.fields.AGE.options.new') }, 
+            { val: 'moderate', show: t('form.fields.AGE.options.moderate') }, 
+            { val: 'old', show: t('form.fields.AGE.options.old') }
+          ], 
+          desc: t('form.fields.AGE.desc'), 
+          tooltip: t('form.fields.AGE.tooltip') 
+        },
       ]
     },
     {
       id: 2,
-      title: t('form.step2'),
-      icon: <Home className="w-5 h-5" />,
+      title: t('form.step2'), // Lokasi
+      icon: <MapPin className="w-5 h-5" />,
       fields: [
-        { name: 'RM', label: t('form.fields.RM.label'), type: 'number', step: '0.1', desc: t('form.fields.RM.desc'), tooltip: t('form.fields.RM.tooltip') },
-        { name: 'AGE', label: t('form.fields.AGE.label'), type: 'number', step: '0.1', desc: t('form.fields.AGE.desc'), tooltip: t('form.fields.AGE.tooltip') },
-        { name: 'DIS', label: t('form.fields.DIS.label'), type: 'number', step: '0.1', desc: t('form.fields.DIS.desc'), tooltip: t('form.fields.DIS.tooltip') },
-        { name: 'RAD', label: t('form.fields.RAD.label'), type: 'number', step: '1', desc: t('form.fields.RAD.desc'), tooltip: t('form.fields.RAD.tooltip') },
+        { 
+          name: 'DIS', 
+          label: t('form.fields.DIS.label'), 
+          type: 'select', 
+          options: [
+            { val: '', show: '-' },
+            { val: 'near', show: t('form.fields.DIS.options.near') }, 
+            { val: 'medium', show: t('form.fields.DIS.options.medium') }, 
+            { val: 'far', show: t('form.fields.DIS.options.far') }
+          ], 
+          desc: t('form.fields.DIS.desc'), 
+          tooltip: t('form.fields.DIS.tooltip') 
+        },
+        { 
+          name: 'RAD', 
+          label: t('form.fields.RAD.label'), 
+          type: 'select', 
+          options: [
+            { val: '', show: '-' },
+            { val: 'good', show: t('form.fields.RAD.options.good') }, 
+            { val: 'average', show: t('form.fields.RAD.options.average') }, 
+            { val: 'poor', show: t('form.fields.RAD.options.poor') }
+          ], 
+          desc: t('form.fields.RAD.desc'), 
+          tooltip: t('form.fields.RAD.tooltip') 
+        },
       ]
     },
     {
       id: 3,
-      title: t('form.step3'),
+      title: t('form.step3'), // Lingkungan
       icon: <Activity className="w-5 h-5" />,
       fields: [
-        { name: 'TAX', label: t('form.fields.TAX.label'), type: 'number', step: '1', desc: t('form.fields.TAX.desc'), tooltip: t('form.fields.TAX.tooltip') },
-        { name: 'PTRATIO', label: t('form.fields.PTRATIO.label'), type: 'number', step: '0.1', desc: t('form.fields.PTRATIO.desc'), tooltip: t('form.fields.PTRATIO.tooltip') },
-        { name: 'B', label: t('form.fields.B.label'), type: 'number', step: '0.1', desc: t('form.fields.B.desc'), tooltip: t('form.fields.B.tooltip') },
-        { name: 'LSTAT', label: t('form.fields.LSTAT.label'), type: 'number', step: '0.1', desc: t('form.fields.LSTAT.desc'), tooltip: t('form.fields.LSTAT.tooltip') },
+        { 
+          name: 'NOX', 
+          label: t('form.fields.NOX.label'), 
+          type: 'select', 
+          options: [
+            { val: '', show: '-' },
+            { val: 'light', show: t('form.fields.NOX.options.light') }, 
+            { val: 'moderate', show: t('form.fields.NOX.options.moderate') }, 
+            { val: 'high', show: t('form.fields.NOX.options.high') }
+          ], 
+          desc: t('form.fields.NOX.desc'), 
+          tooltip: t('form.fields.NOX.tooltip') 
+        },
+        { name: 'CHAS', label: t('form.fields.CHAS.label'), type: 'select', options: [{val: 0, show: t('form.fields.CHAS.opt0')}, {val: 1, show: t('form.fields.CHAS.opt1')}], desc: t('form.fields.CHAS.desc'), tooltip: t('form.fields.CHAS.tooltip') },
+        { 
+          name: 'CRIM', 
+          label: t('form.fields.CRIM.label'), 
+          type: 'select', 
+          options: [
+            { val: '', show: '-' },
+            { val: 'low', show: t('form.fields.CRIM.options.low') }, 
+            { val: 'medium', show: t('form.fields.CRIM.options.medium') }, 
+            { val: 'high', show: t('form.fields.CRIM.options.high') }
+          ], 
+          desc: t('form.fields.CRIM.desc'), 
+          tooltip: t('form.fields.CRIM.tooltip') 
+        },
+        { name: 'TAX', label: t('form.fields.TAX.label'), type: 'number', step: '1', desc: t('form.fields.TAX.desc'), tooltip: t('form.fields.TAX.tooltip'), placeholder: t('form.fields.TAX.placeholder') },
       ]
     }
   ], [t]);
@@ -64,7 +143,25 @@ const MultiStepForm = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleNext = () => {
+    // Validation: Check if at least one field in the current step has a value
+    const currentFields = steps[currentStep].fields;
+    const isStepValid = currentFields.some(field => {
+      const val = formData[field.name];
+      return val !== undefined && val !== null && val !== '';
+    });
 
+    if (!isStepValid) {
+      setToast({ message: t('form.error_empty'), type: 'error' });
+      return;
+    }
+
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      handleSubmit();
+    }
+  };
 
   const handleBack = () => {
     if (currentStep > 0) {
@@ -76,16 +173,27 @@ const MultiStepForm = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
+
+    // Prepare Payload
+    const payload = { ...DEFAULT_VALUES, ...formData };
+    
+    // Map categorical values to numbers
+    ['NOX', 'CRIM', 'RAD', 'DIS', 'AGE'].forEach(key => {
+        if (CATEGORY_MAP[payload[key]]) {
+            payload[key] = CATEGORY_MAP[payload[key]];
+        }
+    });
+
+    // Handle Optional TAX
+    if (!payload.TAX) {
+        payload.TAX = DEFAULT_VALUES.TAX;
+    }
+
     // Simulate luxury "processing" delay
     setTimeout(async () => {
       try {
-        const response = await axios.post('/api/predict', formData);
-        // Backend now returns { price: float, confidence: int }
-        // We store the whole object in local state to access .confidence, 
-        // OR we just assume prediction state holds the price but we need confidence too.
-        // Let's change prediction state to hold the object or handle it.
-        // Current code: setPrediction(response.data.price); -> numeric
-        // Changing strategy: setPrediction({ price: ..., confidence: ... })
+        const response = await axios.post('/api/predict', payload);
+        
         setPrediction({ 
             amount: response.data.price, 
             confidence: response.data.confidence 
@@ -93,11 +201,11 @@ const MultiStepForm = () => {
         
         // --- Sync Global State for WhatsApp ---
         setGlobalPrediction(response.data.price);
-        setGlobalFormData(formData);
+        setGlobalFormData(payload);
 
       } catch (error) {
         console.error("Prediction Error", error);
-        alert("Backend connection failed.");
+        setToast({ message: "Backend connection failed.", type: 'error' });
       } finally {
         setLoading(false);
       }
@@ -110,25 +218,7 @@ const MultiStepForm = () => {
 
   const [toast, setToast] = useState(null);
 
-  const handleNext = () => {
-    // Validation: Check if at least one field in the current step has a value
-    const currentFields = steps[currentStep].fields;
-    const isStepValid = currentFields.some(field => {
-        const val = formData[field.name];
-        return val !== undefined && val !== null && val !== '';
-    });
 
-    if (!isStepValid) {
-        setToast({ message: t('form.error_empty'), type: 'error' });
-        return;
-    }
-
-    if (currentStep < steps.length - 1) {
-        setCurrentStep(prev => prev + 1);
-    } else {
-        handleSubmit();
-    }
-  };
 
   return (
     <div className="w-full h-full flex flex-col relative">
@@ -250,8 +340,8 @@ const MultiStepForm = () => {
                       step={field.step}
                       value={formData[field.name] || ''}
                       onChange={handleChange}
-                      placeholder="0"
                       className="glass-input w-full p-4 rounded-xl text-lg font-mono font-medium focus:scale-[1.02] transition-transform"
+                      placeholder={field.placeholder || "0"}
                     />
                   )}
                   <span className="text-[10px] text-gray-500 mt-1.5 pl-1">{field.desc}</span>
