@@ -27,3 +27,10 @@ ml-api/venv/
 ml-api/.venv/
 ml-api/env/
 __pycache__/
+
+# Local Training - Boston Housing
+backend/venv_train/
+backend/requirements-train.txt
+backend/setup_training_env.bat
+backend/train_model.py
+backend/hanya_cek.py

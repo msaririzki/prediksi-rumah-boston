@@ -21,35 +21,27 @@ const MultiStepForm = () => {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // --- Default Values for Hidden Fields (Means) ---
   const DEFAULT_VALUES = {
     ZN: 11.36,
     INDUS: 11.14,
     PTRATIO: 18.45,
     LSTAT: 12.65,
     B: 356.67,
-    TAX: 408.24 // Default if optional TAX is empty
+    TAX: 408.24 
   };
 
-  // --- Category Mappings to Numerical Values ---
   const CATEGORY_MAP = {
-    // NOX (Pollution)
-    light: 0.4, moderate: 0.55, high: 0.75,
-    // CRIM (Crime)
-    low: 0.05, medium: 0.50, high: 10.0,
-    // RAD (Highway)
-    good: 24, average: 5, poor: 1,
-    // DIS (Distance)
-    near: 1.5, medium: 4.0, far: 8.0,
-    // AGE (Building Age) - Represented as % built before 1940
-    new: 10.0, moderate: 50.0, old: 90.0
+    NOX: { light: 0.4, moderate: 0.55, high: 0.75 },
+    CRIM: { low: 0.05, medium: 0.50, high: 10.0 },
+    RAD:  { good: 24, average: 5, poor: 1 },
+    DIS:  { near: 1.5, medium: 4.0, far: 8.0 },
+    AGE:  { new: 10.0, moderate: 50.0, old: 90.0 }
   };
 
-  // --- Dynamic Steps ---
   const steps = useMemo(() => [
     {
       id: 1,
-      title: t('form.step1'), // Karakteristik Rumah
+      title: t('form.step1'),
       icon: <Home className="w-5 h-5" />,
       fields: [
         { name: 'RM', label: t('form.fields.RM.label'), type: 'number', step: '0.1', desc: t('form.fields.RM.desc'), tooltip: t('form.fields.RM.tooltip'), placeholder: t('form.fields.RM.placeholder') },
@@ -70,7 +62,7 @@ const MultiStepForm = () => {
     },
     {
       id: 2,
-      title: t('form.step2'), // Lokasi
+      title: t('form.step2'),
       icon: <MapPin className="w-5 h-5" />,
       fields: [
         { 
@@ -103,7 +95,7 @@ const MultiStepForm = () => {
     },
     {
       id: 3,
-      title: t('form.step3'), // Lingkungan
+      title: t('form.step3'),
       icon: <Activity className="w-5 h-5" />,
       fields: [
         { 
@@ -144,7 +136,6 @@ const MultiStepForm = () => {
   };
 
   const handleNext = () => {
-    // Validation: Check if at least one field in the current step has a value
     const currentFields = steps[currentStep].fields;
     const isStepValid = currentFields.some(field => {
       const val = formData[field.name];
@@ -167,29 +158,37 @@ const MultiStepForm = () => {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
       setPrediction(null);
-      setGlobalPrediction(null); // Reset global
+      setGlobalPrediction(null);
     }
   };
 
   const handleSubmit = async () => {
     setLoading(true);
 
-    // Prepare Payload
-    const payload = { ...DEFAULT_VALUES, ...formData };
+    let payload = { ...DEFAULT_VALUES, ...formData };
     
-    // Map categorical values to numbers
-    ['NOX', 'CRIM', 'RAD', 'DIS', 'AGE'].forEach(key => {
-        if (CATEGORY_MAP[payload[key]]) {
-            payload[key] = CATEGORY_MAP[payload[key]];
+    ['NOX', 'CRIM', 'RAD', 'DIS', 'AGE'].forEach(feature => {
+        const userChoice = payload[feature];
+        
+        if (CATEGORY_MAP[feature] && CATEGORY_MAP[feature][userChoice] !== undefined) {
+            payload[feature] = CATEGORY_MAP[feature][userChoice];
         }
     });
 
-    // Handle Optional TAX
+    if (payload.RM) payload.RM = parseFloat(payload.RM);
+    
     if (!payload.TAX) {
         payload.TAX = DEFAULT_VALUES.TAX;
+    } else {
+        payload.TAX = parseFloat(payload.TAX);
     }
 
-    // Simulate luxury "processing" delay
+    if (payload.CHAS !== undefined) {
+        payload.CHAS = parseInt(payload.CHAS);
+    } else {
+        payload.CHAS = 0;
+    }
+
     setTimeout(async () => {
       try {
         const response = await axios.post('/api/predict', payload);
@@ -199,7 +198,6 @@ const MultiStepForm = () => {
             confidence: response.data.confidence 
         });
         
-        // --- Sync Global State for WhatsApp ---
         setGlobalPrediction(response.data.price);
         setGlobalFormData(payload);
 
